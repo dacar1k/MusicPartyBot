@@ -20,7 +20,7 @@ namespace MusicStreaming.Modules
         public async Task RemoveTrack(int id)
             => await ReplyAsync(embed: await AudioService.RemoveAsync( Context.Guild, id));
 
-        [Command("shaffle")]
+        [Command("shaffle")]   //допилить
         public async Task Shaffle()
             => await ReplyAsync();
 

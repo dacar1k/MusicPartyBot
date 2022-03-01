@@ -17,8 +17,7 @@ namespace MusicStreaming.Handlers
         public async Task InitializeAsync()
         {
             var json = string.Empty;
-
-            //Check if Config.json Exists.
+                        
             if (!File.Exists(ConfigPath))
             {
                 json = JsonConvert.SerializeObject(GenerateNewConfig(), Formatting.Indented);
@@ -33,9 +32,8 @@ namespace MusicStreaming.Handlers
 
         private static BotConfig GenerateNewConfig() => new BotConfig
         {
-            DiscordToken = "OTI4MTkyMDA3NTIyOTEwMjYw.YdVMKw.UxyCmcH9Ulij3s9dJcGy_r5dRvY",
-            DefaultPrefix = "!",
-            GameStatus = "glhf"
+            DiscordToken = "put token here",
+            DefaultPrefix = "-"
         };
     }
 }

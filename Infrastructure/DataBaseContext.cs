@@ -15,9 +15,9 @@ namespace Infrastructure
 
             protected override void OnConfiguring(DbContextOptionsBuilder options)
                 => options.UseMySql("server=localhost;user=root;database=MusicStreaming;port=3306;Connect Timeout=5;");
-        }
+    }
 
-        public class Server
+    public class Server
         {
             public ulong Id { get; set; }
             public string Prefix { get; set; }
@@ -43,7 +43,6 @@ namespace Infrastructure
             public ulong Id { get; set; }
             public ulong PlayListID { get; set; }
             public string Title { get; set; } 
-            public string Link { get; set; }
-             
+            public string Link { get; set; }             
         }
 }

@@ -57,7 +57,6 @@ namespace MusicStreaming.Handlers
             var argPos = 0;
             //var prefix = await _servers.GetGuildPrefix((message.Channel as SocketGuildChannel).Guild.Id) ?? "!";
             var prefix = "-";
-            //Console.WriteLine((await _servers.GetGuildPrefix((message.Channel as SocketGuildChannel).Guild.Id)).ToString());
             if (!message.HasStringPrefix(prefix, ref argPos) && !message.HasMentionPrefix(_client.CurrentUser, ref argPos)) return;
 
             var context = new SocketCommandContext(_client, message);

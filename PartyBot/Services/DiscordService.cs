@@ -36,7 +36,7 @@ namespace MusicStreaming.Services
         {
             await InitializeGlobalDataAsync();
             
-            await _client.LoginAsync(TokenType.Bot, "OTI4MTkyMDA3NTIyOTEwMjYw.YdVMKw.UxyCmcH9Ulij3s9dJcGy_r5dRvY");
+            await _client.LoginAsync(TokenType.Bot, GlobalData.Config.DiscordToken);
             await _client.StartAsync();
 
             await _commandHandler.InitializeAsync();
@@ -85,7 +85,7 @@ namespace MusicStreaming.Services
             return new ServiceCollection()
                 .AddDbContext<DataBaseContext>()
                 .AddSingleton<Servers>()
-                .AddSingleton<Track>()
+                .AddSingleton<Tracks>()   //если что править тут
                 .AddSingleton<PlayLists>()
                 .AddSingleton<DiscordSocketClient>()
                 .AddSingleton<CommandService>()
