@@ -93,6 +93,7 @@ namespace MusicStreaming.Services
                 .AddSingleton<LavaNode>()
                 .AddSingleton(new LavaConfig())
                 .AddSingleton<LavaLinkAudio>()
+                .AddSingleton<ConfigurationService>()
                 .AddSingleton<BotService>()
                 .AddSingleton<GlobalData>()
                 .BuildServiceProvider();
