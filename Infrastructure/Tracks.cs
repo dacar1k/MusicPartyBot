@@ -18,7 +18,7 @@ namespace Infrastructure
         public async Task<List<Track>> GetTracks(ulong serverID, string name)
         {
 
-            var pl = await _contextDB.PlayLists.Where(x => x.Name == name.ToLower() && x.ServerID == serverID).FirstOrDefaultAsync(); // хз как делать
+            var pl = await _contextDB.PlayLists.Where(x => x.Name == name.ToLower() && x.ServerID == serverID).FirstOrDefaultAsync();
             //List<Track> tracks = await _contextDB.Tracks.Where(x => x.PlayListID == pl.Id).ToListAsync();
             List<Track> tracks = await _contextDB.Tracks.OrderBy(x => x.PlayListID == pl.Id).ToListAsync();
             return tracks;
@@ -31,9 +31,10 @@ namespace Infrastructure
             await _contextDB.SaveChangesAsync();
         }
 
-        public async Task RemoveTrack(string name)
+        public async Task RemoveTrack(ulong serverID, string name, string title)
         {
-            var track = await _contextDB.Tracks.Where(x => x.Title == name).FirstOrDefaultAsync();
+            var pl = await _contextDB.PlayLists.Where(x => x.Name == name.ToLower() && x.ServerID == serverID).FirstOrDefaultAsync();
+            var track = await _contextDB.Tracks.Where(x => x.Title == title && x.PlayListID == pl.Id).FirstOrDefaultAsync();
             _contextDB.Tracks.Remove(track);
             await _contextDB.SaveChangesAsync();
         }

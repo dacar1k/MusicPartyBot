@@ -18,7 +18,7 @@ namespace MusicStreaming.Services
         private readonly LavaNode _lavaNode;
         private readonly LavaLinkAudio _audioService;
         private readonly GlobalData _globalData;
-
+        
         public DiscordService()
         {
             _services = ConfigureServices();

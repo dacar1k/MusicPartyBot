@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 namespace MusicStreaming.Modules
 {
     public class AudioModule : ModuleBase<SocketCommandContext>
-    {
-        /* Get our AudioService from DI */
+    {     
         public LavaLinkAudio AudioService { get; set; }
 
         //[Command("Saveplayllist")]
@@ -19,10 +18,6 @@ namespace MusicStreaming.Modules
         [Command("remove"), Alias("rm")]
         public async Task RemoveTrack(int id)
             => await ReplyAsync(embed: await AudioService.RemoveAsync( Context.Guild, id));
-
-        [Command("shaffle")]   //допилить
-        public async Task Shaffle()
-            => await ReplyAsync();
 
         [Command("Join")]
         [Alias("j")]
@@ -64,6 +59,11 @@ namespace MusicStreaming.Modules
         [Command("Resume")]
         public async Task Resume()
             => await ReplyAsync(await AudioService.ResumeAsync(Context.Guild));
+
+
+        [Command("shaffle")]   //допилить
+        public async Task Shaffle()
+            => await ReplyAsync();
 
         //[Command("Loop")]
         //public async Task Loop)_

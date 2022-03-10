@@ -51,9 +51,10 @@ namespace MusicStreaming.Services
             {
                 foreach (Track track in tracks)
                 {
-                    descriptionBuilder.Append($"{trackNum}: {track.Title} - {track.Link}");
+                    descriptionBuilder.Append($"{trackNum}: {track.Title} - {track.Link} \n");
+                    trackNum++;
                 }
-                return await EmbedHandler.CreateBasicEmbed($"Playlist {Name}", $"{descriptionBuilder} \n", Color.Blue);
+                return await EmbedHandler.CreateBasicEmbed($"Playlist {Name}", $"{descriptionBuilder} ", Color.Blue);
             }
             else
                 return await EmbedHandler.CreateErrorEmbed($"Playlist {Name}", "Tracks were not found");
@@ -74,5 +75,10 @@ namespace MusicStreaming.Services
         {
             return await _playlists.DeletePlaylist(guild.Id, name);
         }
+
+        //public async Task<string> DeleteTrack(IGuild guild, string name, string title)
+        //{
+            
+        //}
     }
 }

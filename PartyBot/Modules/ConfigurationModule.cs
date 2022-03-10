@@ -18,13 +18,12 @@ namespace MusicStreaming.Modules
         private readonly PlayLists _playlists;
         private readonly Tracks _tracks;
 
-        public ConfigurationModule(Servers servers, PlayLists playlists, Tracks playListQueue)
+        public ConfigurationModule(Servers servers, PlayLists playlists, Tracks tracks)
         {
             _servers = servers;
             _playlists = playlists;
-            _tracks = playListQueue;
+            _tracks = tracks;
         }
-
 
         [Command("prefix", RunMode = RunMode.Async)]
         public async Task Prefix(string prefix = null)
@@ -59,14 +58,17 @@ namespace MusicStreaming.Modules
         public async Task ShowAllPlaylists()
             => await ReplyAsync(embed: await ConfigService.ShowPlayList(Context.Guild));
 
-        [Command("deletepl"), Alias("rmpl")]
+        [Command("removepl"), Alias("rmpl")]
         public async Task DeletePlayList(string name)
-            => await ReplyAsync( await ConfigService.DeletePlayList(Context.Guild, name));
+            => await (ReplyAsync(await ConfigService.DeletePlayList(Context.Guild, name)));
 
-        [Command("AddTrack"), Alias("addt")]
+        [Command("addtrack"), Alias("addtr")]
         public async Task AddTrack(string plname, string title, string link)
         {
             await _tracks.AddTrack(plname, title, link);
         }
+
+        //[Command("removetr"),Alias("rmtr")]
+        //public async
     }
 }

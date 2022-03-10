@@ -17,6 +17,7 @@ namespace MusicStreaming.Handlers
         private readonly IServiceProvider _services;
         private readonly Servers _servers;
 
+
         public CommandHandler(IServiceProvider services)
         {
             _commands = services.GetRequiredService<CommandService>();
@@ -60,7 +61,7 @@ namespace MusicStreaming.Handlers
             if (!message.HasStringPrefix(prefix, ref argPos) && !message.HasMentionPrefix(_client.CurrentUser, ref argPos)) return;
 
             var context = new SocketCommandContext(_client, message);
-            await _commands.ExecuteAsync(context, argPos, _services, MultiMatchHandling.Best);
+                await _commands.ExecuteAsync(context, argPos, _services, MultiMatchHandling.Best);
         }
 
         public async Task CommandExecutedAsync(Optional<CommandInfo> command, ICommandContext context, IResult result)

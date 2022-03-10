@@ -12,7 +12,6 @@ namespace MusicStreaming.Services
 {
     public sealed class BotService
     {
-        //public LavaLinkAudio Audio { get; set; }
 
         public async Task<Embed> DisplayInfoAsync(SocketCommandContext context)
         {
