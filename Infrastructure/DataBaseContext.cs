@@ -30,7 +30,6 @@ namespace Infrastructure
             public ulong ServerID { get; set; }
             public string Name { get; set; }
             public string Description { get; set; }
-            //public bool Access { get ; set; }
             public ICollection<Track> Tracks { get; set; }
             public PlayList()
             {

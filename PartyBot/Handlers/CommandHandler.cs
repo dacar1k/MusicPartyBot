@@ -41,23 +41,12 @@ namespace MusicStreaming.Handlers
 
         private async Task HandleCommandAsync(SocketMessage arg)
         {
-            //var argPos = 0;
-
-            //if (!(socketMessage is SocketUserMessage message) || message.Author.IsBot)
-            //    return Task.CompletedTask;
-
-            //if (!message.HasStringPrefix(GlobalData.Config.DefaultPrefix, ref argPos))
-            //    return Task.CompletedTask;
-
-            //var context = new SocketCommandContext(_client, socketMessage as SocketUserMessage);
-            //var result = _commands.ExecuteAsync(context, argPos, _services, MultiMatchHandling.Best);
-            //return result;          
             if (!(arg is SocketUserMessage message)) return;
             if (message.Source != MessageSource.User) return;
 
             var argPos = 0;
-            //var prefix = await _servers.GetGuildPrefix((message.Channel as SocketGuildChannel).Guild.Id) ?? "!";
-            var prefix = "-";
+            var prefix = await _servers.GetGuildPrefix((message.Channel as SocketGuildChannel).Guild.Id) ?? "-";
+            //var prefix = "-";
             if (!message.HasStringPrefix(prefix, ref argPos) && !message.HasMentionPrefix(_client.CurrentUser, ref argPos)) return;
 
             var context = new SocketCommandContext(_client, message);
@@ -66,10 +55,7 @@ namespace MusicStreaming.Handlers
 
         public async Task CommandExecutedAsync(Optional<CommandInfo> command, ICommandContext context, IResult result)
         {
-            /* command is unspecified when there was a search failure (command not found); we don't care about these errors */
             if (!command.IsSpecified) return;
-
-            /* the command was succesful, we don't care about this result, unless we want to log that a command succeeded. */
             if (result.IsSuccess) return;
             await context.Channel.SendMessageAsync($"error: {result}");
         }

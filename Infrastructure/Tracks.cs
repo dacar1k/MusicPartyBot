@@ -19,7 +19,6 @@ namespace Infrastructure
         {
 
             var pl = await _contextDB.PlayLists.Where(x => x.Name == name.ToLower() && x.ServerID == serverID).FirstOrDefaultAsync();
-            //List<Track> tracks = await _contextDB.Tracks.Where(x => x.PlayListID == pl.Id).ToListAsync();
             List<Track> tracks = await _contextDB.Tracks.OrderBy(x => x.PlayListID == pl.Id).ToListAsync();
             return tracks;
         }

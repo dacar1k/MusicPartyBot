@@ -24,8 +24,7 @@ namespace MusicStreaming.Modules
         public async Task JoinAndPlay()
             => await ReplyAsync(embed: await AudioService.JoinAsync(Context.Guild, Context.User as IVoiceState, Context.Channel as ITextChannel));
 
-        [Command("Leave")]
-
+        [Command("Leave"),Alias("lv")]
         public async Task Leave()
             => await ReplyAsync(embed: await AudioService.LeaveAsync(Context.Guild));
 
@@ -60,13 +59,15 @@ namespace MusicStreaming.Modules
         public async Task Resume()
             => await ReplyAsync(await AudioService.ResumeAsync(Context.Guild));
 
-
-        [Command("shaffle")]   //допилить
-        public async Task Shaffle()
-            => await ReplyAsync();
+        [Command("loadpl"), Alias("ldpl")]
+        public async Task LoadPlayList(string name)     
+            => await ReplyAsync(embed: await AudioService.LoadPL(Context.User as SocketGuildUser, Context.User as IVoiceState, Context.Channel as ITextChannel, Context.Guild, name));
+        //[Command("shaffle")]   //допилить                                         Context.Guild, search, Context.User as IVoiceState
+        //public async Task Shaffle()     (Context.User as SocketGuildUser, Context.Guild, search, Context.User as IVoiceState, Context.Channel as ITextChannel))                                          
+        //    => await ReplyAsync();
 
         //[Command("Loop")]
-        //public async Task Loop)_
-        //    => await 
+        //public async Task Loop()
+        //    => await Context.Channel.SendMessageAsync(await AudioService.LoopAsync(Context.Guild));
     }
 }

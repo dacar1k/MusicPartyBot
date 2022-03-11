@@ -67,8 +67,5 @@ namespace MusicStreaming.Modules
         {
             await _tracks.AddTrack(plname, title, link);
         }
-
-        //[Command("removetr"),Alias("rmtr")]
-        //public async
     }
 }

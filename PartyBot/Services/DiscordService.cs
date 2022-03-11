@@ -47,7 +47,7 @@ namespace MusicStreaming.Services
         private void SubscribeLavaLinkEvents()
         {
             _lavaNode.OnLog += LogAsync;
-            _lavaNode.OnTrackEnded += _audioService.TrackEnded;
+            _lavaNode.OnTrackEnded += _audioService.TrackEnded;            
         }
 
         private void SubscribeDiscordEvents()
@@ -77,7 +77,7 @@ namespace MusicStreaming.Services
         }
         private async Task LogAsync(LogMessage logMessage)
         {
-            await LoggingService.LogAsync(logMessage.Source, logMessage.Severity, logMessage.Message);
+                await LoggingService.LogAsync(logMessage.Source, logMessage.Severity, logMessage.Message);
         }
 
         private ServiceProvider ConfigureServices()
