@@ -14,7 +14,6 @@ namespace MusicStreaming.Services
     {
         private readonly PlayLists _playlists;
         private readonly Tracks _tracks;
-        private readonly GlobalData _globalData;
 
         public ConfigurationService(PlayLists playLists, Tracks tracks)
         {
