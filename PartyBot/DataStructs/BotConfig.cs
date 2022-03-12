@@ -7,5 +7,6 @@ namespace MusicStreaming.DataStructs
         public string DiscordToken { get; set; }
         public string DefaultPrefix { get; set; }
         public string GameStatus { get; set; }
+        public List<string> Help { get; set; }
     }
 }

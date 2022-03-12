@@ -34,7 +34,7 @@ namespace MusicStreaming.Services
                 ThumbnailUrl = context.Guild.IconUrl,
                 Timestamp = DateTime.UtcNow,
                 Color = Color.DarkOrange,
-                Footer = new EmbedFooterBuilder { Text = "Powered By DraxCodes PartyBot & Victoria", IconUrl = context.Client.CurrentUser.GetAvatarUrl() },
+                Footer = new EmbedFooterBuilder { Text = "Powered By dacar1k", IconUrl = context.Client.CurrentUser.GetAvatarUrl() },
                 Fields = fields
             });
 

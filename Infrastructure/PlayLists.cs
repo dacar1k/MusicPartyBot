@@ -16,7 +16,7 @@ namespace Infrastructure
 
         public async Task<bool> CheckIfExists(ulong serverID, string name) //проверка существует и плейлист с таким именем
         {
-            var pl =  _contextDB.PlayLists.Where(x => x.ServerID == serverID && x.Name == name.ToLower());
+            var pl = _contextDB.PlayLists.Where(x => x.ServerID == serverID && x.Name == name.ToLower());
             if (pl != null) return false;
             else return true;
         }

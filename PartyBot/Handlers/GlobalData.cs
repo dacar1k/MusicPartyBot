@@ -33,7 +33,9 @@ namespace MusicStreaming.Handlers
         private static BotConfig GenerateNewConfig() => new BotConfig
         {
             DiscordToken = "put token here",
-            DefaultPrefix = "-"
+            DefaultPrefix = "-",
+            GameStatus = "type -help to view commands",
+            Help = new List<string> { "** **","** **", }
         };
     }
 }

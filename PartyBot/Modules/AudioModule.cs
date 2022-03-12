@@ -10,17 +10,11 @@ namespace MusicStreaming.Modules
     {     
         public LavaLinkAudio AudioService { get; set; }
 
-        //[Command("Saveplayllist")]
-        //[Alias("spl")]
-        //public async Task SavePlaylist()
-        //    => await SavePlaylist(embed: await AudioService.SaveAsync(Context.Guild.Id, Context.Guild));
-
         [Command("remove"), Alias("rm")]
         public async Task RemoveTrack(int id)
             => await ReplyAsync(embed: await AudioService.RemoveAsync( Context.Guild, id));
 
-        [Command("Join")]
-        [Alias("j")]
+        [Command("Join"),Alias("j")]
         public async Task JoinAndPlay()
             => await ReplyAsync(embed: await AudioService.JoinAsync(Context.Guild, Context.User as IVoiceState, Context.Channel as ITextChannel));
 
@@ -28,8 +22,7 @@ namespace MusicStreaming.Modules
         public async Task Leave()
             => await ReplyAsync(embed: await AudioService.LeaveAsync(Context.Guild));
 
-        [Command("Play")]
-        [Alias("p")]
+        [Command("Play"),Alias("p")]
         public async Task Play([Remainder]string search)
             => await ReplyAsync(embed: await AudioService.PlayAsync(Context.User as SocketGuildUser, Context.Guild, search, Context.User as IVoiceState, Context.Channel as ITextChannel));
 
@@ -37,15 +30,17 @@ namespace MusicStreaming.Modules
         public async Task Stop()
             => await ReplyAsync(embed: await AudioService.StopAsync(Context.Guild));
 
-        [Command("List")]
-        [Alias("q")]
+        [Command("List"),Alias("q")]
         public async Task List()
             => await ReplyAsync(embed: await AudioService.ListAsync(Context.Guild));
 
-        [Command("Skip")]
-        [Alias("n")]
+        [Command("Skip"), Alias("n")]
         public async Task Skip()
-            => await ReplyAsync(embed: await AudioService.SkipTrackAsync(Context.Guild));
+            => await ReplyAsync(embed: await AudioService.SkipTrackAsync(Context.Guild, true));
+
+        [Command("Back"), Alias("b")]
+        public async Task Back()
+            => await ReplyAsync(embed: await AudioService.SkipTrackAsync(Context.Guild,false));
 
         [Command("Volume")]
         public async Task Volume(int volume)
@@ -59,15 +54,12 @@ namespace MusicStreaming.Modules
         public async Task Resume()
             => await ReplyAsync(await AudioService.ResumeAsync(Context.Guild));
 
-        [Command("loadpl"), Alias("ldpl")]
+        [Command("loadpl"), Alias("lpl")]
         public async Task LoadPlayList(string name)     
             => await ReplyAsync(embed: await AudioService.LoadPL(Context.User as SocketGuildUser, Context.User as IVoiceState, Context.Channel as ITextChannel, Context.Guild, name));
-        //[Command("shaffle")]   //допилить                                         Context.Guild, search, Context.User as IVoiceState
-        //public async Task Shaffle()     (Context.User as SocketGuildUser, Context.Guild, search, Context.User as IVoiceState, Context.Channel as ITextChannel))                                          
-        //    => await ReplyAsync();
 
-        //[Command("Loop")]
-        //public async Task Loop()
-        //    => await Context.Channel.SendMessageAsync(await AudioService.LoopAsync(Context.Guild));
+        [Command("Loop")]
+        public async Task Loop()
+            => await Context.Channel.SendMessageAsync(await AudioService.LoopAsync(Context.Guild));
     }
 }

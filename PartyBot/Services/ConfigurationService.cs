@@ -1,4 +1,5 @@
 ﻿using Discord;
+using Discord.WebSocket;
 using Infrastructure;
 using MusicStreaming.Handlers;
 using System;
@@ -11,17 +12,26 @@ namespace MusicStreaming.Services
 {
     public sealed class ConfigurationService
     {
-        private readonly Servers _servers;
         private readonly PlayLists _playlists;
         private readonly Tracks _tracks;
-        private readonly LavaNode _lavaNode;
+        private readonly GlobalData _globalData;
 
-        public ConfigurationService(LavaNode lavaNode, Servers servers, PlayLists playLists, Tracks tracks)
+        public ConfigurationService(PlayLists playLists, Tracks tracks)
         {
-            _servers = servers; 
             _playlists = playLists;
             _tracks = tracks;
-            _lavaNode = lavaNode;
+        }
+        public async Task HelpAsync(SocketGuildUser user)
+        {
+            try
+            {
+                var dMChannel = user.GetOrCreateDMChannelAsync();
+                StringBuilder msgBuilder = new StringBuilder();
+                var msg = GlobalData.Config.Help;
+                foreach (var str in msg) { msgBuilder.Append($"{str}\n"); }
+                await dMChannel.Result.SendMessageAsync($">>> {msgBuilder.ToString()}");
+            }
+            catch { }
         }
 
         public async Task<Embed> ShowPlayList(IGuild guild)
@@ -75,11 +85,7 @@ namespace MusicStreaming.Services
         {
             return await _playlists.DeletePlaylist(guild.Id, name);
         }
+        
 
-
-        //public async Task<string> DeleteTrack(IGuild guild, string name, string title)
-        //{
-
-        //}
     }
 }

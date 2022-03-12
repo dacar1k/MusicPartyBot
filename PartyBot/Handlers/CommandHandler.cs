@@ -41,16 +41,20 @@ namespace MusicStreaming.Handlers
 
         private async Task HandleCommandAsync(SocketMessage arg)
         {
-            if (!(arg is SocketUserMessage message)) return;
-            if (message.Source != MessageSource.User) return;
+            try
+            {
+                if (!(arg is SocketUserMessage message)) return;
+                if (message.Source != MessageSource.User) return;
 
-            var argPos = 0;
-            var prefix = await _servers.GetGuildPrefix((message.Channel as SocketGuildChannel).Guild.Id) ?? "-";
-            //var prefix = "-";
-            if (!message.HasStringPrefix(prefix, ref argPos) && !message.HasMentionPrefix(_client.CurrentUser, ref argPos)) return;
+                var argPos = 0;
+                var prefix = await _servers.GetGuildPrefix((message.Channel as SocketGuildChannel).Guild.Id) ?? "-";
+                //var prefix = "-";
+                if (!message.HasStringPrefix(prefix, ref argPos) && !message.HasMentionPrefix(_client.CurrentUser, ref argPos)) return;
 
-            var context = new SocketCommandContext(_client, message);
+                var context = new SocketCommandContext(_client, message);
                 await _commands.ExecuteAsync(context, argPos, _services, MultiMatchHandling.Best);
+            }
+            catch { }
         }
 
         public async Task CommandExecutedAsync(Optional<CommandInfo> command, ICommandContext context, IResult result)

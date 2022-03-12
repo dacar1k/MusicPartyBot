@@ -47,7 +47,7 @@ namespace MusicStreaming.Services
         private void SubscribeLavaLinkEvents()
         {
             _lavaNode.OnLog += LogAsync;
-            _lavaNode.OnTrackEnded += _audioService.TrackEnded;            
+            _lavaNode.OnTrackEnded += _audioService.TrackEnded; 
         }
 
         private void SubscribeDiscordEvents()
@@ -66,8 +66,7 @@ namespace MusicStreaming.Services
             try
             {
                 await _lavaNode.ConnectAsync();
-                //await _client.SetGameAsync(GlobalData.Config.GameStatus);
-                //await _client.SetGameAsync();
+                await _client.SetGameAsync(GlobalData.Config.GameStatus);               
             }
             catch (Exception ex)
             {

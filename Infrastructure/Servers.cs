@@ -26,11 +26,5 @@ namespace Infrastructure
             var prefix = await _context.Servers.Where(x => x.Id == id).Select(x => x.Prefix).FirstOrDefaultAsync();
             return await Task.FromResult(prefix);
         }
-
-        public async Task SetStatus(ulong id, string status)
-        {
-            var server = await _context.Servers.FindAsync(id);
-            if (server != null) {server.GameStatus = status; await _context.SaveChangesAsync(); }            
-        }
     }
 }

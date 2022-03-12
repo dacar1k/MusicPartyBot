@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Discord.WebSocket;
+using System.Linq;
 
 namespace MusicStreaming.Modules
 {
@@ -15,13 +17,11 @@ namespace MusicStreaming.Modules
 
         public ConfigurationService ConfigService { get; set; }
         private readonly Servers _servers;
-        private readonly PlayLists _playlists;
         private readonly Tracks _tracks;
 
-        public ConfigurationModule(Servers servers, PlayLists playlists, Tracks tracks)
+        public ConfigurationModule(Servers servers, Tracks tracks)
         {
             _servers = servers;
-            _playlists = playlists;
             _tracks = tracks;
         }
 
@@ -38,15 +38,7 @@ namespace MusicStreaming.Modules
             await ReplyAsync($"The prefix has been adjusted to `{prefix}`.");
         }
 
-        [Command("setstatus")]
-        [Alias("status")]
-        public async Task Status(string status = null)
-        {
-            await _servers.SetStatus(Context.Guild.Id, status);
-            await ReplyAsync($"The Status has been adjusted to `{status}`.");
-        }
-
-        [Command("crp")]
+        [Command("createplaylist"),Alias("crpl")]
         public async Task CreatePlaylist(string name, string desc)
             => await ConfigService.CreatePlaylist(Context.Guild, name, desc);
 
@@ -64,8 +56,10 @@ namespace MusicStreaming.Modules
 
         [Command("addtrack"), Alias("addtr")]
         public async Task AddTrack(string plname, string title, string link)
-        {
-            await _tracks.AddTrack(plname, title, link);
-        }
+            => await _tracks.AddTrack(plname, title, link);
+
+        [Command("help"), Alias("h")]
+        public async Task ShowHelp()
+            => await ConfigService.HelpAsync(Context.User as SocketGuildUser);
     }
 }
