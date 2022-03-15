@@ -20,6 +20,5 @@ namespace MusicStreaming.Modules
                 await message.RemoveReactionAsync(r.Key, user as IUser);
             }
         }
-
     }
 }

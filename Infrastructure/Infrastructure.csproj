@@ -5,25 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\20220221200818_InitialVersion.cs" />
-    <Compile Remove="Migrations\20220221200818_InitialVersion.Designer.cs" />
-    <Compile Remove="Migrations\20220221201737_InitialVersion.cs" />
-    <Compile Remove="Migrations\20220221201737_InitialVersion.Designer.cs" />
-    <Compile Remove="Migrations\20220221213142_FirtsMigration.cs" />
-    <Compile Remove="Migrations\20220221213142_FirtsMigration.Designer.cs" />
-    <Compile Remove="Migrations\20220222100254_innitialization.cs" />
-    <Compile Remove="Migrations\20220222100254_innitialization.Designer.cs" />
-    <Compile Remove="Migrations\20220222122059_Initialization.cs" />
-    <Compile Remove="Migrations\20220222122059_Initialization.Designer.cs" />
-    <Compile Remove="Migrations\20220222122152_Initialization.cs" />
-    <Compile Remove="Migrations\20220222122152_Initialization.Designer.cs" />
-    <Compile Remove="Migrations\20220222122234_Initialization.cs" />
-    <Compile Remove="Migrations\20220222122234_Initialization.Designer.cs" />
-    <Compile Remove="Migrations\20220225080358_initialization.cs" />
-    <Compile Remove="Migrations\20220225080358_initialization.Designer.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.8">
       <PrivateAssets>all</PrivateAssets>

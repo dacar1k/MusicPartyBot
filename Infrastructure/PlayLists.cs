@@ -14,17 +14,21 @@ namespace Infrastructure
             _contextDB = context;
         }
 
-        public async Task<bool> CheckIfExists(ulong serverID, string name) //проверка существует и плейлист с таким именем
+        public async Task<bool> CheckIfExists(ulong serverID, string name)
         {
-            var pl = _contextDB.PlayLists.Where(x => x.ServerID == serverID && x.Name == name.ToLower());
-            if (pl != null) return false;
-            else return true;
+            try
+            {
+                var pl = _contextDB.PlayLists.Where(x => x.ServerID == serverID && x.Name == name.ToLower()).FirstOrDefault();
+                if (pl != null) return true; else return false;
+            }
+            catch
+            {
+                return false;
+            }           
         }
 
         public async Task CreatePlaylist(ulong serverID, string name, string desc)
         {
-            //var playlist = await _contextDB.PlayLists.FindAsync(serverID);
-            //if (playlist == null) 
             _contextDB.PlayLists.Add(new PlayList { Name = name.ToLower(), ServerID = serverID, Description = desc, Tracks = new List<Track>() });
             await _contextDB.SaveChangesAsync();
         }
@@ -39,7 +43,6 @@ namespace Infrastructure
             else return list;
         }
 
-        //public async Task<string> DeletePlaylist(ulong serverID, ulong PLID)
         public async Task<string> DeletePlaylist(ulong serverID, string namePL)
         {
             PlayList _pl = await _contextDB.PlayLists.Where(x => x.Name == namePL.ToLower()).FirstOrDefaultAsync();

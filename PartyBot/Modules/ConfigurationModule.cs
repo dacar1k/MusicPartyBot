@@ -16,8 +16,10 @@ namespace MusicStreaming.Modules
     {
 
         public ConfigurationService ConfigService { get; set; }
+        public LavaLinkAudio AudioService { get; set; }
         private readonly Servers _servers;
-        private readonly Tracks _tracks;
+        private readonly Tracks _tracks;   
+        
 
         public ConfigurationModule(Servers servers, Tracks tracks)
         {
@@ -38,25 +40,37 @@ namespace MusicStreaming.Modules
             await ReplyAsync($"The prefix has been adjusted to `{prefix}`.");
         }
 
-        [Command("createplaylist"),Alias("crpl")]
-        public async Task CreatePlaylist(string name, string desc)
-            => await ConfigService.CreatePlaylist(Context.Guild, name, desc);
+        [Command("createpl"),Alias("crpl")]
+        public async Task CreatePlaylist(string name,[Remainder]string desc)
+        {
+            await ReplyAsync(await ConfigService.CreatePlaylist(Context.Guild, name, desc));
+            await ReplyAsync(embed: await ConfigService.ShowPlayList(Context.Guild));
+        }             
 
-        [Command("showplaylist"), Alias("spl")]
+        [Command("showplaylist"), Alias("shpl")]
         public async Task ShowPlaylist(string Name)
             => await ReplyAsync(embed: await ConfigService.ShowPlaylist(Context.Guild, Name));
 
-        [Command("playlists"), Alias("allpl")]
+        [Command("allplaylist"), Alias("allpl")]
         public async Task ShowAllPlaylists()
             => await ReplyAsync(embed: await ConfigService.ShowPlayList(Context.Guild));
 
-        [Command("removepl"), Alias("rmpl")]
+        [Command("rmplaylist"), Alias("rmpl")]
         public async Task DeletePlayList(string name)
-            => await (ReplyAsync(await ConfigService.DeletePlayList(Context.Guild, name)));
+        {
+            await (ReplyAsync(await ConfigService.DeletePlayList(Context.Guild, name)));
+        }
 
         [Command("addtrack"), Alias("addtr")]
-        public async Task AddTrack(string plname, string title, string link)
-            => await _tracks.AddTrack(plname, title, link);
+        public async Task AddTrack(string pltitle, [Remainder]string track)
+        {
+            var _track = await AudioService.Search(track);
+            await _tracks.AddTrack(Context.Guild.Id, pltitle, _track.Tracks.FirstOrDefault().Title, _track.Tracks.FirstOrDefault().Url);
+        }
+         
+        [Command("rmtrack"), Alias("rmtr")]
+        public async Task RemoveTrack(string name, [Remainder] string title)
+            => await _tracks.RemoveTrack(Context.Guild.Id, name, title);
 
         [Command("help"), Alias("h")]
         public async Task ShowHelp()

@@ -20,6 +20,7 @@ namespace MusicStreaming.Services
         private readonly Tracks _tracks;
         private readonly LavaNode _lavaNode;
         private bool skip = false;
+        private bool s1 = true;
 
         private readonly List<queueManager> qeuemanager = new List<queueManager>();
 
@@ -28,7 +29,6 @@ namespace MusicStreaming.Services
             _lavaNode = lavaNode;
             _tracks = tracks;
         } 
-
         public async Task<Embed> JoinAsync(IGuild guild, IVoiceState voiceState, ITextChannel textChannel)
         {
             if (_lavaNode.HasPlayer(guild))
@@ -53,7 +53,15 @@ namespace MusicStreaming.Services
             }
         }
 
-        public async Task<Embed> LoadPL(SocketGuildUser user, IVoiceState voiceState, ITextChannel textChannel, IGuild guild, string name) //сделать 
+        public async Task<SearchResponse> Search(string query)
+        {
+            var search = Uri.IsWellFormedUriString(query, UriKind.Absolute) ?
+                  await _lavaNode.SearchAsync(query)
+                    : await _lavaNode.SearchYouTubeAsync(query);
+            return search;
+        }
+
+        public async Task<Embed> LoadPL(SocketGuildUser user, IVoiceState voiceState, ITextChannel textChannel, IGuild guild, string name)
         {
             if (user.VoiceChannel == null)
             {
@@ -65,8 +73,14 @@ namespace MusicStreaming.Services
             }
             catch { }
             var player = _lavaNode.GetPlayer(guild);
-            var rm = qeuemanager.Where(x => x.serverID == guild.Id).FirstOrDefault();
-            qeuemanager.Remove(rm);
+            try
+            {               
+                var rm = qeuemanager.Where(x => x.serverID == guild.Id).FirstOrDefault();
+                qeuemanager.Remove(rm);
+            }
+            catch { }
+
+
             qeuemanager.Add(new queueManager(guild.Id, new List<LavaTrack>(), 0, 0));
             var qeue = qeuemanager.Where(x => x.serverID == guild.Id).FirstOrDefault();
 
@@ -75,8 +89,8 @@ namespace MusicStreaming.Services
             foreach (var query in tracks)
             {
                 var search = Uri.IsWellFormedUriString(query.Link, UriKind.Absolute) ?
-                    await _lavaNode.SearchAsync(query.Link)
-                        : await _lavaNode.SearchYouTubeAsync(query.Link);
+                     await _lavaNode.SearchAsync(query.Link)
+                     : await _lavaNode.SearchYouTubeAsync(query.Link);
                 qeue.TrackLink.Add(search.Tracks.FirstOrDefault());
             }
             await player.PlayAsync(qeue.TrackLink[0]);
@@ -102,10 +116,7 @@ namespace MusicStreaming.Services
 
                 LavaTrack track;
 
-                var search = Uri.IsWellFormedUriString(query, UriKind.Absolute) ?
-                    await _lavaNode.SearchAsync(query)
-                    : await _lavaNode.SearchYouTubeAsync(query);
-
+                SearchResponse search = await Search(query);
 
                 if (search.LoadStatus == LoadStatus.NoMatches)
                 {
@@ -113,12 +124,8 @@ namespace MusicStreaming.Services
                 }
 
                 track = search.Tracks.FirstOrDefault();
-                //var q = qeuemanager.Where(x => x.serverID == guild.Id).FirstOrDefault();
 
-
-
-                //if (q.TrackLink == null) q.TrackLink = new List<LavaTrack>();
-                if (qeuemanager.Where(x => x.serverID == guild.Id).FirstOrDefault() == null) qeuemanager.Add(new queueManager(guild.Id, new List<LavaTrack>(), 0, 0)); //нахера - не знаю
+                if (qeuemanager.Where(x => x.serverID == guild.Id).FirstOrDefault() == null) qeuemanager.Add(new queueManager(guild.Id, new List<LavaTrack>(), 0, 0));
 
                 if (player.Track != null && player.PlayerState is PlayerState.Playing || player.PlayerState is PlayerState.Paused)
                 {
@@ -139,6 +146,69 @@ namespace MusicStreaming.Services
 
         }
 
+        public async Task<Embed> PlayPlayListYT(SocketGuildUser user, IGuild guild, string query, IVoiceState voiceState, ITextChannel textChannel)
+        {
+            if (user.VoiceChannel == null)
+            {
+                return await EmbedHandler.CreateErrorEmbed("Music, Join/Play", "You Must First Join a Voice Channel.");
+            }
+            if (!_lavaNode.HasPlayer(guild))
+            {
+                await _lavaNode.JoinAsync(voiceState.VoiceChannel, textChannel);
+                qeuemanager.Add(new queueManager(guild.Id, new List<LavaTrack>(), 0, 0));
+                await EmbedHandler.CreateBasicEmbed("Music, Join", $"Joined {voiceState.VoiceChannel.Name}.", Color.Green);
+            }
+            try
+            {
+                var player = _lavaNode.GetPlayer(guild);
+                try
+                {
+                    var rm = qeuemanager.Where(x => x.serverID == guild.Id).FirstOrDefault();
+                    qeuemanager.Remove(rm);
+                }
+                catch { }
+
+                SearchResponse search = await Search(query);
+
+                if (search.LoadStatus == LoadStatus.NoMatches)
+                {
+                    return await EmbedHandler.CreateErrorEmbed("Music", $"I wasn't able to find anything for {query}.");
+                }
+
+                LavaTrack track;
+
+                var descriptionBuilder = new StringBuilder();
+                var trackNum = 1;
+
+                if (qeuemanager.Where(x => x.serverID == guild.Id).FirstOrDefault() == null) qeuemanager.Add(new queueManager(guild.Id, new List<LavaTrack>(), 0, 0));
+                var trc = 0;
+                if (player.Track != null && player.PlayerState is PlayerState.Playing || player.PlayerState is PlayerState.Paused)
+                {
+                    foreach (var tr in search.Tracks)
+                    {
+                        trc++;
+                        qeuemanager.Where(x => x.serverID == guild.Id).FirstOrDefault().TrackLink.Add(tr);
+                        await LoggingService.LogInformationAsync("Music", $"{tr.Title} has been added to the music queue.");
+                        descriptionBuilder.Append($"{trackNum}: [{tr.Title}] - {tr.Duration}\n");
+                        trackNum++;
+                    }                   
+                    return await EmbedHandler.CreateBasicEmbed("Music", $"{descriptionBuilder} have been added to the queue.", Color.Blue);
+                }
+
+                foreach (var tr in search.Tracks)
+                    qeuemanager.Where(x => x.serverID == guild.Id).FirstOrDefault().TrackLink.Add(tr);
+                var t_ = qeuemanager.Where(x => x.serverID == guild.Id).FirstOrDefault().TrackLink[0];
+                await player.PlayAsync(t_);
+                await LoggingService.LogInformationAsync("Music", $"Bot Now Playing: {t_.Title}\nUrl: {t_.Url}");
+                return await EmbedHandler.CreateBasicEmbed("Music", $"Now Playing: {t_.Title}\nUrl: {t_.Url}", Color.Blue);
+            }
+
+            catch (Exception ex)
+            {
+                return await EmbedHandler.CreateErrorEmbed("Music, Play", ex.Message);
+            }
+        }
+
         public async Task<Embed> LeaveAsync(IGuild guild)
         {
             try
@@ -155,7 +225,7 @@ namespace MusicStreaming.Services
                 await _lavaNode.LeaveAsync(player.VoiceChannel);
 
                 await LoggingService.LogInformationAsync("Music", $"Bot has left.");
-                return await EmbedHandler.CreateBasicEmbed("Music", $"I've left. Thank you for playing moosik.", Color.Blue);
+                return await EmbedHandler.CreateBasicEmbed("Music", $"I've left. Thank you for playing music.", Color.Blue);
             }
             catch (InvalidOperationException ex)
             {
@@ -183,10 +253,10 @@ namespace MusicStreaming.Services
                         var trackNum = 1;
                         foreach (LavaTrack track in queue.TrackLink)
                         {
-                            descriptionBuilder.Append($"{trackNum}: [{track.Title}]({track.Url}) - {track.Id}\n");
+                            descriptionBuilder.Append($"{trackNum}: {track.Title} - {track.Duration}\n");
                             trackNum++;
                         }
-                        return await EmbedHandler.CreateBasicEmbed("Music Playlist", $"Now Playing: [{player.Track.Title}]({player.Track.Url}) \n{descriptionBuilder}", Color.Blue);
+                        return await EmbedHandler.CreateBasicEmbed("Music Playlist", $"Now Playing: {player.Track.Title} ({player.Track.Url}) \n{descriptionBuilder}", Color.Blue);
                     }
                 }
                 else
@@ -235,7 +305,7 @@ namespace MusicStreaming.Services
 
                 var queue = qeuemanager.Where(x => x.serverID == guild.Id).FirstOrDefault();
                 if (forvard) { queue.inc++; } else { queue.inc--; }                
-                var currentTrack = player.Track;
+                var currentTrack = player.Track; //трай кеч добавить
                 //var pos = queue.TrackLink.IndexOf(currentTrack) + 2;
                 skip = true;
                 if (queue.Loop == 1)
@@ -263,7 +333,7 @@ namespace MusicStreaming.Services
                 {
                     try
                     {
-                        //await player.PlayAsync(queue.TrackLink.ElementAt(queue.TrackLink.IndexOf(currentTrack) + 1));
+                        s1 = false;
                         await player.PlayAsync(queue.TrackLink[queue.inc]);
                         await LoggingService.LogInformationAsync("Music", $"Bot skipped: {currentTrack.Title}");
                         return await EmbedHandler.CreateBasicEmbed("Music Skip", $"I have successfully skiped {currentTrack.Title}", Color.Blue);
@@ -371,18 +441,72 @@ namespace MusicStreaming.Services
         {
             var serverID = args.Player.VoiceChannel.GuildId;
             var queue = qeuemanager.Where(x => x.serverID == serverID).FirstOrDefault();
-            if (queue.Loop == null) return;
-            if (queue.Loop == 1)
             {
-                await args.Player.PlayAsync(queue.TrackLink[queue.inc]);
+                try
+                {
+                    if (s1 == false)
+                    {
+
+                        if (!skip)
+                        {
+                            queue.inc++;
+                        }
+                        if (queue.inc == queue.TrackLink.Count)
+                        {
+                            await args.Player.PlayAsync(queue.TrackLink[0]);
+                            queue.inc = 0;
+                            await args.Player.TextChannel.SendMessageAsync($"Now playing {args.Player.Track.Title}");
+                        }
+                        else
+                        {
+                            if (s1 == true)
+                            {
+                                await args.Player.PlayAsync(queue.TrackLink[queue.inc]);
+                            }
+                        
+                            await args.Player.TextChannel.SendMessageAsync($"Now playing {args.Player.Track.Title}");
+                        }
+                    }
+                    if (s1 == true)
+                    {
+                        //протестировать
+                        if (queue.Loop == 1)
+                        {   
+                            await args.Player.PlayAsync(queue.TrackLink[queue.inc]);
+                            return;
+                        }
+                        if (!skip)
+                        {
+                            queue.inc++;
+                        }
+                        if (queue.inc == queue.TrackLink.Count)
+                        {
+                            await args.Player.PlayAsync(queue.TrackLink[0]);
+                            queue.inc = 0;
+                            await args.Player.TextChannel.SendMessageAsync($"Now playing {args.Player.Track.Title}");
+                        }
+                        else
+                        {
+                            await args.Player.PlayAsync(queue.TrackLink[queue.inc]);
+                            await args.Player.TextChannel.SendMessageAsync($"Now playing {args.Player.Track.Title}");
+                        }
+                    }
+                }
+                catch { }
+                return;
             }
+
             if (queue.inc > queue.TrackLink.Count)
             {
                 await args.Player.TextChannel.SendMessageAsync("Nothing to play");
                 return;
             }
-            var currentTrack = args.Player.Track;
-            try { if(!skip) queue.inc++; } catch { }
+          //  var currentTrack = args.Player.Track;
+
+            //if (queue.inc == queue.TrackLink.Count-1)
+            //{
+
+            //}
             skip = !skip;
             return;  
 

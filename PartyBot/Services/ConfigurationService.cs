@@ -13,7 +13,7 @@ namespace MusicStreaming.Services
     public sealed class ConfigurationService
     {
         private readonly PlayLists _playlists;
-        private readonly Tracks _tracks;
+        private readonly Tracks _tracks; 
 
         public ConfigurationService(PlayLists playLists, Tracks tracks)
         {
@@ -28,7 +28,7 @@ namespace MusicStreaming.Services
                 StringBuilder msgBuilder = new StringBuilder();
                 var msg = GlobalData.Config.Help;
                 foreach (var str in msg) { msgBuilder.Append($"{str}\n"); }
-                await dMChannel.Result.SendMessageAsync($">>> {msgBuilder.ToString()}");
+                await dMChannel.Result.SendMessageAsync($">>> {msgBuilder}");
             }
             catch { }
         }
@@ -60,7 +60,7 @@ namespace MusicStreaming.Services
             {
                 foreach (Track track in tracks)
                 {
-                    descriptionBuilder.Append($"{trackNum}: {track.Title} - {track.Link} \n");
+                    descriptionBuilder.Append($"{trackNum}: {track.Title}\n"); ///yhjkiloikjhytgrffghyju
                     trackNum++;
                 }
                 return await EmbedHandler.CreateBasicEmbed($"Playlist {Name}", $"{descriptionBuilder} ", Color.Blue);

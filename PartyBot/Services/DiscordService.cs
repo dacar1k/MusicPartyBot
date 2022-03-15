@@ -84,7 +84,7 @@ namespace MusicStreaming.Services
             return new ServiceCollection()
                 .AddDbContext<DataBaseContext>()
                 .AddSingleton<Servers>()
-                .AddSingleton<Tracks>()   //если что править тут
+                .AddSingleton<Tracks>() 
                 .AddSingleton<PlayLists>()
                 .AddSingleton<DiscordSocketClient>()
                 .AddSingleton<CommandService>()
