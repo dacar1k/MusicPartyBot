@@ -7,6 +7,7 @@ using MusicStreaming.Handlers;
 using System;
 using System.Threading.Tasks;
 using Victoria;
+using MusicStreaming.CustomVi;
 
 namespace MusicStreaming.Services
 {
@@ -15,7 +16,7 @@ namespace MusicStreaming.Services
         private readonly DiscordSocketClient _client;
         private readonly CommandHandler _commandHandler;
         private readonly ServiceProvider _services;
-        private readonly LavaNode _lavaNode;
+        private readonly LavaNode<MusicPlayer> _lavaNode;
         private readonly LavaLinkAudio _audioService;
         private readonly GlobalData _globalData;
         
@@ -24,7 +25,7 @@ namespace MusicStreaming.Services
             _services = ConfigureServices();
             _client = _services.GetRequiredService<DiscordSocketClient>();
             _commandHandler = _services.GetRequiredService<CommandHandler>();
-            _lavaNode = _services.GetRequiredService<LavaNode>();
+            _lavaNode = _services.GetRequiredService<LavaNode<MusicPlayer>>();
             _globalData = _services.GetRequiredService<GlobalData>();
             _audioService = _services.GetRequiredService<LavaLinkAudio>();
 
@@ -47,13 +48,14 @@ namespace MusicStreaming.Services
         private void SubscribeLavaLinkEvents()
         {
             _lavaNode.OnLog += LogAsync;
-            _lavaNode.OnTrackEnded += _audioService.TrackEnded; 
+            _lavaNode.OnTrackEnded += _audioService.TrackEnded;
         }
 
         private void SubscribeDiscordEvents()
         {
             _client.Ready += ReadyAsync;
             _client.Log += LogAsync;
+            _client.UserVoiceStateUpdated += _audioService.UserLeft;
         }
 
         private async Task InitializeGlobalDataAsync()
@@ -84,17 +86,22 @@ namespace MusicStreaming.Services
             return new ServiceCollection()
                 .AddDbContext<DataBaseContext>()
                 .AddSingleton<Servers>()
-                .AddSingleton<Tracks>() 
+                .AddSingleton<Tracks>()
                 .AddSingleton<PlayLists>()
-                .AddSingleton<DiscordSocketClient>()
+                .AddSingleton(new DiscordSocketClient(new DiscordSocketConfig
+                {
+                    LogLevel = LogSeverity.Verbose,
+                    GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.GuildVoiceStates | GatewayIntents.GuildScheduledEvents | GatewayIntents.Guilds,
+                    
+                }))
                 .AddSingleton<CommandService>()
                 .AddSingleton<CommandHandler>()
-                .AddSingleton<LavaNode>()
+                .AddSingleton<LavaNode<MusicPlayer>>()
                 .AddSingleton(new LavaConfig())
                 .AddSingleton<LavaLinkAudio>()
                 .AddSingleton<ConfigurationService>()
                 .AddSingleton<BotService>()
-                .AddSingleton<GlobalData>()
+                .AddSingleton<GlobalData>() 
                 .BuildServiceProvider();
         }
     }

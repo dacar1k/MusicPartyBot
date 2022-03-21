@@ -38,7 +38,7 @@ namespace MusicStreaming.Services
 
         private static async Task Append(string message, ConsoleColor color)
         {
-            await Task.Run(() => {
+            await Task.Run(() =>{
                 Console.ForegroundColor = color;
                 Console.Write(message);
             });

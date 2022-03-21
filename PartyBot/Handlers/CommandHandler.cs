@@ -53,9 +53,8 @@ namespace MusicStreaming.Handlers
                 var context = new SocketCommandContext(_client, message);
                 await _commands.ExecuteAsync(context, argPos, _services, MultiMatchHandling.Best);
             }
-            catch(Exception ex) 
-            {
-                
+            catch
+            {                
             }
         }
 

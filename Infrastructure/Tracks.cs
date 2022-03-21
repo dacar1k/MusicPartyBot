@@ -15,29 +15,26 @@ namespace Infrastructure
             _contextDB = context;
         }
 
-        public async Task<List<Track>> GetTracks(ulong serverID, string name)
+        public async Task<List<Track>> GetTracks(ulong serverID, ulong id)
         {
-            var pl = await _contextDB.PlayLists.Where(x => x.Name.Trim() == name.ToLower().Trim() && x.ServerID == serverID).FirstOrDefaultAsync();
-            List<Track> tracks = await _contextDB.Tracks.OrderBy(x => x.PlayListID == pl.Id).ToListAsync();
+
+            var pl = await _contextDB.PlayLists.Where(x => x.Id == id & x.ServerID == serverID).FirstOrDefaultAsync();
+            List<Track> tracks = await _contextDB.Tracks.Where(x => x.PlayListID == pl.Id).ToListAsync();
             return tracks;
         }
 
-        public async Task AddTrack(ulong serverID, string name, string title, string url)
+        public async Task AddTrack(ulong serverID, ulong id, string title, string url)
         {
-            var plID = await _contextDB.PlayLists.Where(x => x.Name.Trim() == name.ToLower().Trim() && x.ServerID == serverID).FirstOrDefaultAsync();
-            var xx = 0;
+            var plID = await _contextDB.PlayLists.Where(x => x.Id == id & x.ServerID == serverID).FirstOrDefaultAsync();
             _contextDB.Tracks.Add(new Track { Title = title, Link = url, PlayListID = plID.Id });
             await _contextDB.SaveChangesAsync();
         }
 
-        public async Task RemoveTrack(ulong serverID, string name, string title)
+        public async Task RemoveTrack(ulong serverID,ulong id, string title)
         {
-            var plID = await _contextDB.PlayLists.Where(x => x.Name.Trim() == name.ToLower().Trim() && x.ServerID == serverID).FirstOrDefaultAsync();
-            var xvd = 0;
+            var plID = await _contextDB.PlayLists.Where(x => x.Id == id & x.ServerID == serverID).FirstOrDefaultAsync();
             var track = await _contextDB.Tracks.Where(x => x.Title.Trim() == title.Trim() && x.PlayListID == plID.Id).FirstOrDefaultAsync();
-            //var track = await _contextDB.Tracks.Where(x => x.Title.Trim() == title.Trim() && x.PlayListID == plID.Id).FirstOrDefaultAsync();
             _contextDB.Tracks.Remove(track);
-            var xv = 0;
             await _contextDB.SaveChangesAsync();
         }
     }

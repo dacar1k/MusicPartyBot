@@ -18,7 +18,7 @@ namespace Infrastructure
         {
             try
             {
-                var pl = _contextDB.PlayLists.Where(x => x.ServerID == serverID && x.Name == name.ToLower()).FirstOrDefault();
+                var pl =  _contextDB.PlayLists.Where(x => x.ServerID == serverID & x.Name == name.ToLower()).FirstOrDefault();
                 if (pl != null) return true; else return false;
             }
             catch
@@ -42,19 +42,22 @@ namespace Infrastructure
             }
             else return list;
         }
-
-        public async Task<string> DeletePlaylist(ulong serverID, string namePL)
+        public async Task<string> GetName(ulong serverID, ulong id)
         {
-            PlayList _pl = await _contextDB.PlayLists.Where(x => x.Name == namePL.ToLower()).FirstOrDefaultAsync();
+            var pl = await _contextDB.PlayLists.Where(x => x.Id == id & x.ServerID == serverID).FirstOrDefaultAsync();
+            return pl.Name;
+        }
+        public async Task<string> DeletePlaylist(ulong serverID, ulong ID)
+        {
+            PlayList _pl = await _contextDB.PlayLists.Where(x => x.Id == ID & x.ServerID == serverID).FirstOrDefaultAsync();
             if (_pl  !=  null)
             {
-                var tracks = _contextDB.PlayLists.Where(x => x.Name == namePL.ToLower()).Include(x => x.Tracks).First();
+                var tracks = _contextDB.PlayLists.Where(x => x.Id == ID).Include(x => x.Tracks).First();
                 _contextDB.Remove(tracks);
                 await _contextDB.SaveChangesAsync();
                 return "Successful deleted!";
             }
             else   return "An error was occurred";            
         }
-
     }
 }

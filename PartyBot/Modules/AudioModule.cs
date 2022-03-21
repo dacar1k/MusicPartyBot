@@ -14,56 +14,59 @@ namespace MusicStreaming.Modules
         public async Task RemoveTrack(int id)
             => await ReplyAsync(embed: await AudioService.RemoveAsync( Context.Guild, id));
 
-        [Command("Join"),Alias("j")]
+        [Command("join"),Alias("j")]
         public async Task JoinAndPlay()
             => await ReplyAsync(embed: await AudioService.JoinAsync(Context.Guild, Context.User as IVoiceState, Context.Channel as ITextChannel));
 
-        [Command("Leave"),Alias("lv")]
+        [Command("leave"),Alias("lv")]
         public async Task Leave()
             => await ReplyAsync(embed: await AudioService.LeaveAsync(Context.Guild));
 
-        [Command("Play"),Alias("p")]
+        [Command("play"),Alias("p")]
         public async Task Play([Remainder]string search)
             => await ReplyAsync(embed: await AudioService.PlayAsync(Context.User as SocketGuildUser, Context.Guild, search, Context.User as IVoiceState, Context.Channel as ITextChannel));
-       
-        [Command("Playp"), Alias("pp")]
-        public async Task PlayPL(string search)
-            => await ReplyAsync(embed: await AudioService.PlayPlayListYT(Context.User as SocketGuildUser, Context.Guild, search, Context.User as IVoiceState, Context.Channel as ITextChannel));
 
-        [Command("Stop")]
+        //[Command("playp"), Alias("pp")]
+        //public async Task PlayPL(string search)
+        //    => await ReplyAsync(embed: await AudioService.PlayPlayListYT(Context.User as SocketGuildUser, Context.Guild, search, Context.User as IVoiceState, Context.Channel as ITextChannel));
+
+        [Command("stop")]
         public async Task Stop()
             => await ReplyAsync(embed: await AudioService.StopAsync(Context.Guild));
 
-        [Command("List"),Alias("q")]
+        [Command("queue"),Alias("q")]
         public async Task List()
             => await ReplyAsync(embed: await AudioService.ListAsync(Context.Guild));
 
-        [Command("Skip"), Alias("n")]
+        [Command("skip"), Alias("n")]
         public async Task Skip()
             => await ReplyAsync(embed: await AudioService.SkipTrackAsync(Context.Guild, true));
 
-        [Command("Back"), Alias("b")]
+        [Command("back"), Alias("b")]
         public async Task Back()
-            => await ReplyAsync(embed: await AudioService.SkipTrackAsync(Context.Guild,false));
+            => await ReplyAsync(embed: await AudioService.SkipTrackAsync(Context.Guild, false));
 
-        [Command("Volume")]
+        [Command("volume")]
         public async Task Volume(int volume)
             => await ReplyAsync(await AudioService.SetVolumeAsync(Context.Guild, volume));
 
-        [Command("Pause")]
+        [Command("pause")]
         public async Task Pause()
             => await ReplyAsync(await AudioService.PauseAsync(Context.Guild));
 
-        [Command("Resume")]
+        [Command("resume")]
         public async Task Resume()
             => await ReplyAsync(await AudioService.ResumeAsync(Context.Guild));
 
-        [Command("loadpl"), Alias("lpl")]
-        public async Task LoadPlayList(string name)     
-            => await ReplyAsync(embed: await AudioService.LoadPL(Context.User as SocketGuildUser, Context.User as IVoiceState, Context.Channel as ITextChannel, Context.Guild, name));
+        [Command("loadpl"), Alias("ldpl")]
+        public async Task LoadPlayList(ulong id)     
+            => await ReplyAsync(embed: await AudioService.LoadPL(Context.User as SocketGuildUser, Context.User as IVoiceState, Context.Channel as ITextChannel, Context.Guild, id));
 
-        [Command("Loop")]
-        public async Task Loop()
-            => await Context.Channel.SendMessageAsync(await AudioService.LoopAsync(Context.Guild));
+        [Command("shuffle", RunMode = RunMode.Async), Alias("sh")]
+        public async Task Shuffle()
+        {
+            await AudioService.Shaffle(Context.Guild);
+            await AudioService.ListAsync(Context.Guild);
+        }
     }
 }
