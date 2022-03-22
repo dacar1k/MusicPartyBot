@@ -8,11 +8,8 @@ using System.Threading.Tasks;
 using Victoria;
 using Victoria.EventArgs;
 using Victoria.Enums;
-using Victoria.Responses;
 using Infrastructure;
 using System.Collections.Generic;
-using MusicStreaming.DataStructs;
-using System.Threading;
 using Victoria.Responses.Search;
 using MusicStreaming.CustomVi;
 
@@ -22,11 +19,13 @@ namespace MusicStreaming.Services
     {
         private readonly Tracks _tracks;
         private readonly LavaNode<MusicPlayer> _lavaNode;
+        private readonly Youtube _youtube;
 
-        public LavaLinkAudio( LavaNode<MusicPlayer> lavaNode, Tracks tracks)
+        public LavaLinkAudio( LavaNode<MusicPlayer> lavaNode, Tracks tracks, Youtube youtube)
         {
             _lavaNode = lavaNode;
             _tracks = tracks;    
+            _youtube = youtube;
         } 
 
         public async Task<Embed> JoinAsync(IGuild guild, IVoiceState voiceState, ITextChannel textChannel)
@@ -107,6 +106,27 @@ namespace MusicStreaming.Services
             }
 
 
+        }
+        
+        public async Task FindbyType(SocketGuildUser user, IGuild guild, string x, IVoiceState voiceState, ITextChannel textChannel)
+        {
+            List<string> list = await _youtube.FindByType(x);
+
+
+            var player = _lavaNode.GetPlayer(guild);
+            player.Queue.Clear();
+            player.QueueHistory.Clear();
+            LavaTrack search;
+            foreach (string item in list)
+            {
+                search = Search(item).Result.Tracks.FirstOrDefault();
+                player.Queue.Enqueue(search);
+            }
+            
+            var first = player.Queue.ElementAt(0);
+            player.Queue.RemoveAt(0);
+            player.QueueHistory.Enqueue(first);
+            await player.PlayAsync(first);           
         }
 
         public async Task<Embed> PlayAsync(SocketGuildUser user, IGuild guild, string query, IVoiceState voiceState, ITextChannel textChannel)
@@ -246,8 +266,8 @@ namespace MusicStreaming.Services
                 if (player == null)
                 {
                     return await EmbedHandler.CreateErrorEmbed(null, $"Could not aquire player.\nAre you using the bot right now? check{GlobalData.Config.DefaultPrefix}Help for info on how to use the bot.");
-                }          
-
+                }
+             
 
                 if (id < 0 || player.Queue.Count + player.QueueHistory.Count + 2 < id)
                 {
@@ -273,8 +293,6 @@ namespace MusicStreaming.Services
                 return await EmbedHandler.CreateErrorEmbed("Music, List", ex.Message);
             }
         }   
-
-
 
         public async Task<Embed> SkipTrackAsync(IGuild guild, bool forvard) 
         {
@@ -320,8 +338,19 @@ namespace MusicStreaming.Services
                     List<LavaTrack> History = player.QueueHistory.ToList();
                     player.Queue.Clear();
                     player.QueueHistory.Clear();
-                    var pl1 = History.ElementAt(History.Count - 2);
-                    var pl2 = History.ElementAt(History.Count - 1);
+
+                    LavaTrack pl1;
+                    LavaTrack pl2;
+                    try
+                    {
+                        pl1 = History.ElementAt(History.Count - 2);
+                        pl2 = History.ElementAt(History.Count - 1);
+                    }
+                    catch
+                    {
+                        return await EmbedHandler.CreateErrorEmbed("Music Skip", "Unnable to skip track");
+                    };
+                  
                     Current.Insert(0, pl2);
                     Current.Insert(0, pl1);
                     History.RemoveAt(History.Count - 1);
@@ -343,10 +372,10 @@ namespace MusicStreaming.Services
         public async Task TrackEnded(TrackEndedEventArgs args)
         {
 
-             (args.Player as MusicPlayer).QueueHistory.Enqueue((args.Player as MusicPlayer).Track);
-            await (args.Player as MusicPlayer).TextChannel.SendMessageAsync(embed: await EmbedHandler.CreateBasicEmbed("Now Playing", $"[{args.Player.Track.Title}]({args.Player.Track.Url})", Color.Blue));
             if (!(args.Reason is TrackEndReason.Finished))
             {
+                await (args.Player as MusicPlayer).TextChannel.SendMessageAsync(embed: await EmbedHandler.CreateBasicEmbed("Now Playing", $"[{args.Player.Track.Title}]({args.Player.Track.Url})", Color.Blue));
+                (args.Player as MusicPlayer).QueueHistory.Enqueue((args.Player as MusicPlayer).Track);
                 return;
             }           
             var nextTrack = (args.Player as MusicPlayer).Queue.FirstOrDefault();

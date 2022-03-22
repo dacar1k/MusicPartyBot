@@ -101,7 +101,8 @@ namespace MusicStreaming.Services
                 .AddSingleton<LavaLinkAudio>()
                 .AddSingleton<ConfigurationService>()
                 .AddSingleton<BotService>()
-                .AddSingleton<GlobalData>() 
+                .AddSingleton<GlobalData>()    
+                .AddSingleton<Youtube>()
                 .BuildServiceProvider();
         }
     }

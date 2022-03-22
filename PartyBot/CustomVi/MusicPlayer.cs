@@ -15,7 +15,6 @@ namespace MusicStreaming.CustomVi
         public bool LoopEnabled { get; set; }
         public string FilterEnabled { get; set; }
         public IUserMessage NowPlayingMessage { get; set; }
-        //public DefaultQueue<LavaTrack> QueueCurrent { get; set; }       
         public DefaultQueue<LavaTrack> QueueHistory { get; set; }
         public int currentplay { get; set; }
         public bool forvard { get; set; }
@@ -28,7 +27,6 @@ namespace MusicStreaming.CustomVi
             LoopEnabled = false;
             FilterEnabled = null;
             NowPlayingMessage = null;
-            //QueueCurrent = new DefaultQueue<LavaTrack>();
             QueueHistory = new DefaultQueue<LavaTrack>();
             currentplay = 0;
             forvard = true;

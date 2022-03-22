@@ -4,6 +4,7 @@ using MusicStreaming.Services;
 using System.Threading.Tasks;
 using Discord.WebSocket;
 using System.Linq;
+using MusicStreaming.Handlers;
 
 namespace MusicStreaming.Modules
 {
@@ -13,13 +14,15 @@ namespace MusicStreaming.Modules
         public ConfigurationService ConfigService { get; set; }
         public LavaLinkAudio AudioService { get; set; }
         private readonly Servers _servers;
-        private readonly Tracks _tracks;   
-        
+        private readonly Tracks _tracks; 
+        private readonly PlayLists _playLists;
 
-        public ConfigurationModule(Servers servers, Tracks tracks)
+
+        public ConfigurationModule(Servers servers, Tracks tracks, PlayLists playList)
         {
             _servers = servers;
             _tracks = tracks;
+            _playLists = playList;
         }
 
         [Command("prefix", RunMode = RunMode.Async)]
@@ -53,7 +56,7 @@ namespace MusicStreaming.Modules
         [Command("rmplaylist"), Alias("rmpl")]
         public async Task DeletePlayList(ulong ID)
         {
-            await (ReplyAsync(await ConfigService.DeletePlayList(Context.Guild, ID)));
+            await ReplyAsync(await ConfigService.DeletePlayList(Context.Guild, ID));
         }
 
         [Command("addtrack"), Alias("addtr")]
@@ -61,6 +64,7 @@ namespace MusicStreaming.Modules
         {
             var _track = await AudioService.Search(track);
             await _tracks.AddTrack(Context.Guild.Id, plID, _track.Tracks.FirstOrDefault().Title, _track.Tracks.FirstOrDefault().Url);
+            await ReplyAsync(embed: await EmbedHandler.CreateBasicEmbed($"Playlist {_playLists.GetName(Context.Guild.Id, plID).Result}", $"Succesfully added track\n {_track.Tracks.FirstOrDefault().Title}", Discord.Color.Green));
         }
          
         [Command("rmtrack"), Alias("rmtr")]

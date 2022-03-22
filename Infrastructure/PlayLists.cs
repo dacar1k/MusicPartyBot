@@ -18,7 +18,7 @@ namespace Infrastructure
         {
             try
             {
-                var pl =  _contextDB.PlayLists.Where(x => x.ServerID == serverID & x.Name == name.ToLower()).FirstOrDefault();
+                var pl = _contextDB.PlayLists.Where(x => x.ServerID == serverID & x.Name == name.ToLower()).FirstOrDefault();
                 if (pl != null) return true; else return false;
             }
             catch

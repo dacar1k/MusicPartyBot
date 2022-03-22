@@ -20,6 +20,7 @@ namespace MusicStreaming.Services
             _playlists = playLists;
             _tracks = tracks;
         }
+
         public async Task<Embed> HelpAsync(SocketGuildUser user)
         {
             try
@@ -86,8 +87,7 @@ namespace MusicStreaming.Services
         public async Task<string> DeletePlayList(IGuild guild, ulong ID)
         {
             return await _playlists.DeletePlaylist(guild.Id, ID);
-        }
-        
+        }       
 
     }
 }

@@ -14,6 +14,7 @@ namespace MusicStreaming.Handlers
         public static string ConfigPath { get; set; } = "config.json";
         public static BotConfig Config { get; set; }
 
+
         public async Task InitializeAsync()
         {
             var json = string.Empty;
@@ -34,6 +35,7 @@ namespace MusicStreaming.Handlers
         {
             DiscordToken = "put token here",
             DefaultPrefix = "-",
+            API = "",
             GameStatus = "type -help to view commands",
             Help = new List<string> { "** **","** **", }
         };

@@ -14,7 +14,12 @@ namespace Infrastructure
             public DbSet<Track> Tracks { get; set; }
 
             protected override void OnConfiguring(DbContextOptionsBuilder options)
-                => options.UseMySql ("server=localhost;user=root;database=MusicStreaming;port=3306;Connect Timeout=5;", new MySqlServerVersion(new Version()));
+            {
+                options.UseMySql("server=localhost;user=root;database=MusicStreaming;port=3306;Connect Timeout=5;", new MySqlServerVersion(new Version()));
+            }
+             
+            
+    
     }
 
         public class Server

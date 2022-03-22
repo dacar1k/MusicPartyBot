@@ -26,10 +26,6 @@ namespace MusicStreaming.Modules
         public async Task Play([Remainder]string search)
             => await ReplyAsync(embed: await AudioService.PlayAsync(Context.User as SocketGuildUser, Context.Guild, search, Context.User as IVoiceState, Context.Channel as ITextChannel));
 
-        //[Command("playp"), Alias("pp")]
-        //public async Task PlayPL(string search)
-        //    => await ReplyAsync(embed: await AudioService.PlayPlayListYT(Context.User as SocketGuildUser, Context.Guild, search, Context.User as IVoiceState, Context.Channel as ITextChannel));
-
         [Command("stop")]
         public async Task Stop()
             => await ReplyAsync(embed: await AudioService.StopAsync(Context.Guild));
@@ -66,7 +62,13 @@ namespace MusicStreaming.Modules
         public async Task Shuffle()
         {
             await AudioService.Shaffle(Context.Guild);
-            await AudioService.ListAsync(Context.Guild);
+            await ReplyAsync(embed: await AudioService.ListAsync(Context.Guild));
+        }
+        [Command("search", RunMode = RunMode.Async), Alias("sr")]
+        public async Task Finde(string name)
+        {
+            await AudioService.FindbyType(Context.User as SocketGuildUser, Context.Guild, name, Context.User as IVoiceState, Context.Channel as ITextChannel);
+            await ReplyAsync(embed: await AudioService.ListAsync(Context.Guild));
         }
     }
 }
