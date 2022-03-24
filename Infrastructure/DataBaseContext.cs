@@ -9,19 +9,20 @@ namespace Infrastructure
 {
         public class DataBaseContext : DbContext
         {
+            public DataBaseContext():base()
+            {
+            Database.EnsureCreated();
+            } 
             public DbSet<Server> Servers { get; set; }
             public DbSet<PlayList> PlayLists { get; set; }
             public DbSet<Track> Tracks { get; set; }
-
+            public string connection = "server=localhost;user=root;database=MusicStreaming;port=3306;Connect Timeout=5;";
             protected override void OnConfiguring(DbContextOptionsBuilder options)
             {
-                options.UseMySql("server=localhost;user=root;database=MusicStreaming;port=3306;Connect Timeout=5;", new MySqlServerVersion(new Version()));
+                options.UseMySql(connection, new MySqlServerVersion(new Version()));
             }
-             
-            
-    
-    }
-
+        }
+        
         public class Server
         {
             public ulong Id { get; set; }

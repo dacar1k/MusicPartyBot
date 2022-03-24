@@ -114,8 +114,10 @@ namespace MusicStreaming.Services
 
 
             var player = _lavaNode.GetPlayer(guild);
+            if(list == null) { return; }
             player.Queue.Clear();
             player.QueueHistory.Clear();
+            
             LavaTrack search;
             foreach (string item in list)
             {
@@ -286,7 +288,7 @@ namespace MusicStreaming.Services
                     player.Queue.RemoveAt(id-2);
                     return await EmbedHandler.CreateBasicEmbed(null, $"Track with id {id} {buf.Title} was removed from queue", Color.Blue);
                 }
-                return await EmbedHandler.CreateErrorEmbed("List", $"Can't remove track with {id}"); //нахера
+                return await EmbedHandler.CreateErrorEmbed("List", $"Can't remove track with {id}");
             }
             catch (Exception ex)
             {
@@ -476,10 +478,9 @@ namespace MusicStreaming.Services
         {
             var player = _lavaNode.GetPlayer(guild);
             player.Queue.Shuffle();
-            player.QueueHistory.Shuffle();
         }
 
-        public async Task UserLeft(SocketUser user, SocketVoiceState before, SocketVoiceState after)
+        public   async Task UserLeft(SocketUser user, SocketVoiceState before, SocketVoiceState after)
         {
 
             if (user.IsBot)

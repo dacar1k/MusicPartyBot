@@ -1,10 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System.Diagnostics;
+using System.Threading.Tasks;
 using MusicStreaming.Services;
 
 namespace MusicStreaming
 {
     class Program
-    {  
-        private static Task Main() => new DiscordService().InitializeAsync();
+    {          
+        private static Task Main()=> new DiscordService().InitializeAsync(); 
     }
 }

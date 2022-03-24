@@ -1421,3 +1421,6 @@ Caused by: java.net.UnknownHostException: www.youtube.com
 2022-03-22 16:05:17.784  INFO 9476 --- [XNIO-1 I/O-1] lavalink.server.io.SocketServer          : {"guildId":"955730390386081812","op":"destroy"}
 2022-03-22 16:05:23.161  INFO 9476 --- [XNIO-1 I/O-1] lavalink.server.io.SocketServer          : Connection closed from /127.0.0.1:62669 -- CloseStatus[code=1006, reason=]
 2022-03-22 16:05:23.162  INFO 9476 --- [XNIO-1 I/O-1] lavalink.server.io.SocketContext         : Shutting down 0 playing players.
+2022-03-22 16:13:02.418  INFO 9476 --- [Thread-1] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'applicationTaskExecutor'
+2022-03-22 16:13:02.419  INFO 9476 --- [Thread-1] c.s.d.l.tools.GarbageCollectionMonitor   : GC monitoring disabled.
+2022-03-22 16:13:02.428  INFO 9476 --- [Thread-1] io.undertow.servlet                      : Destroying Spring FrameworkServlet 'dispatcherServlet'

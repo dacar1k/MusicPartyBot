@@ -8,6 +8,8 @@ using System;
 using System.Threading.Tasks;
 using Victoria;
 using MusicStreaming.CustomVi;
+using System.Diagnostics;
+using MySqlConnector;
 
 namespace MusicStreaming.Services
 {
@@ -19,9 +21,10 @@ namespace MusicStreaming.Services
         private readonly LavaNode<MusicPlayer> _lavaNode;
         private readonly LavaLinkAudio _audioService;
         private readonly GlobalData _globalData;
-        
+
         public DiscordService()
         {
+
             _services = ConfigureServices();
             _client = _services.GetRequiredService<DiscordSocketClient>();
             _commandHandler = _services.GetRequiredService<CommandHandler>();
@@ -35,13 +38,12 @@ namespace MusicStreaming.Services
 
         public async Task InitializeAsync()
         {
-            await InitializeGlobalDataAsync();
-            
+            await InitializeGlobalDataAsync();      
+
             await _client.LoginAsync(TokenType.Bot, GlobalData.Config.DiscordToken);
             await _client.StartAsync();
 
             await _commandHandler.InitializeAsync();
-
             await Task.Delay(-1);
         }
 
@@ -56,6 +58,7 @@ namespace MusicStreaming.Services
             _client.Ready += ReadyAsync;
             _client.Log += LogAsync;
             _client.UserVoiceStateUpdated += _audioService.UserLeft;
+
         }
 
         private async Task InitializeGlobalDataAsync()

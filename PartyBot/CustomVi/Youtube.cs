@@ -8,7 +8,6 @@ namespace MusicStreaming.Services
 {
     public class Youtube
     {
-        private readonly GlobalData _globalData;
         public async Task <List<string>> FindByType(string x)
         {
 
@@ -23,7 +22,10 @@ namespace MusicStreaming.Services
                     break;
                 case "hiphop":
                     type = "/m/0glt670";
-                    break;                                   
+                    break;
+                default:
+                    //return;
+                    break;
             }
 
             var youtubeService = new YouTubeService(new BaseClientService.Initializer()
@@ -31,12 +33,13 @@ namespace MusicStreaming.Services
                 ApiKey = GlobalData.Config.API,
                 ApplicationName = this.GetType().ToString()
             });
-
+            if (type == "") { return null; }
             var searchListRequest = youtubeService.Search.List("snippet");
             searchListRequest.MaxResults = 15;
             searchListRequest.TopicId = type;
             searchListRequest.Type = "music";
             searchListRequest.RegionCode = "RU";
+            searchListRequest.Order = SearchResource.ListRequest.OrderEnum.SearchSortUnspecified;
 
             var searchListResponse = await searchListRequest.ExecuteAsync();
 
